@@ -30,7 +30,7 @@ def get_requires():
 
 VERSION = get_version()
 ARGS = {
-    "name": "parser",
+    "name": "prs",
     "version": VERSION,
     "author": "dan",
     "author_email": "greck1111@mail.ru",
