@@ -1,7 +1,7 @@
 from pytest import fixture
 
 
-@fixture(params=[1, 4, 16, 30000])
+@fixture(params=[1, 4, 16, 32])
 def num_page(request):
     return request.param
 
