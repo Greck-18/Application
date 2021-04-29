@@ -39,10 +39,9 @@ class Parser(ABC):
 
 class ParserLinks(Parser):
     _url = "https://www.lse.co.uk/news/archive.html?page={}"
-
+    _links = []
     def __init__(self, num_page):
         self._num_page = num_page
-        self._links = []
 
     def check_num_page(self):
         try:
@@ -82,10 +81,11 @@ class ParserLinks(Parser):
 class ParserNews(Parser):
     _pattern = re.compile(r"[rdthsn]+")
     _clean_pattern=re.compile(r"\n+")
+    _article = {}
+    _all_news=[]
 
     def __init__(self, url):
         self._url = url
-        self._news = {}
 
     def get_data(self):
 
@@ -106,16 +106,17 @@ class ParserNews(Parser):
 
         d = date.text.split(" ")[1:]
         d[0] = self._pattern.sub("", d[0])
-        self._news.update(
-            title=title.text,
-            date=datetime.strptime(" ".join(d), "%d %b %Y %H:%M"),
-            content=self._clean_pattern.sub(" ",content.text),
-            url=self._url
-        )
+        self._article={
+            "title":title.text,
+            "date":datetime.strptime(" ".join(d), "%d %b %Y %H:%M"),
+            "content":self._clean_pattern.sub(" ",content.text),
+            "url":self._url
+        }
+        self._all_news.append(self._article)
 
     @property
     def news(self):
-        return self._news
+        return self._all_news
 
     def save_data(self):
         ...
@@ -123,5 +124,18 @@ class ParserNews(Parser):
 
 if __name__ == "__main__":
     link_parser = ParserLinks(1)
-    link_parser.get_data()
-    link_parser.process_data()
+    for i in range(1,11):
+        link_parser=ParserLinks(i)
+        print(f"Processing: parsing page {i} from {10}")
+        link_parser.get_data()
+        link_parser.process_data()
+
+    info=ParserNews(link_parser.links[0])
+    for i in range(len(link_parser.links)):
+        info=ParserNews(link_parser.links[i])
+        print(f"Processing: url {i+1} from {len(link_parser.links)}")
+        info.get_data()
+        info.process_data()
+    pp.pprint(info.news)
+
+

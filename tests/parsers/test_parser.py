@@ -3,7 +3,7 @@ import pprint as pp
 from pytest import mark, fixture,raises
 from prs.parser.news import ParserLinks,ParserNews
 
-from .data import num_page,num_page_neg
+from .data import num_page,num_page_neg,count_url
 
 
 # @fixture(autouse=True, scope="function")
@@ -13,23 +13,23 @@ from .data import num_page,num_page_neg
 #     os.system("rm -rf .files")
 
 
-# @mark.parser
-# @mark.links
-# def test_load_lings(num_page):
-#     parser = ParserLinks(num_page)
-#     parser.get_data()
-#     parser.process_data()
-#     assert len(parser.links)
+@mark.parser
+@mark.links
+def test_load_lings(num_page):
+    parser = ParserLinks(num_page)
+    parser.get_data()
+    parser.process_data()
+    assert len(parser.links)
 
 
-# @mark.parser
-# @mark.links
-# #@mark.single
-# def test_check_links(num_page):
-#     parser = ParserLinks(num_page)
-#     parser.get_data()
-#     parser.process_data()
-#     assert isinstance(parser.links[0], str)
+@mark.parser
+@mark.links
+#@mark.single
+def test_check_links(num_page):
+    parser = ParserLinks(num_page)
+    parser.get_data()
+    parser.process_data()
+    assert isinstance(parser.links[0], str)
 
 
 # # @mark.single
@@ -38,37 +38,36 @@ from .data import num_page,num_page_neg
 # #         file.write(str(num_page))
 
 
-# @mark.parser
-# @mark.links
-# #@mark.single
-# def test_num_page_neg(num_page_neg):
-#     parser = ParserLinks(num_page_neg)
-#     parser.get_data()
-#     with raises(ValueError):
-#         parser.process_data()
-
-
-# @mark.parser
-# @mark.links
-# @mark.single
-# def test_num_page_message_neg(num_page_neg):
-#     parser = ParserLinks(num_page_neg)
-#     parser.get_data()
-#     try:
-#         parser.process_data()
-#     except ValueError as error:
-#         assert str(num_page_neg) in error.args[0]
-
+@mark.parser
+@mark.links
+@mark.neg
+def test_num_page_neg(num_page_neg):
+    parser = ParserLinks(num_page_neg)
+    parser.get_data()
+    with raises(ValueError):
+        parser.process_data()
 
 
 @mark.parser
 @mark.links
+@mark.neg
+def test_num_page_message_neg(num_page_neg):
+    parser = ParserLinks(num_page_neg)
+    parser.get_data()
+    try:
+        parser.process_data()
+    except ValueError as error:
+        assert str(num_page_neg) in error.args[0]
+
+
+
+@mark.parser
+@mark.news
 @mark.single
-def test_load_news(num_page):
+def test_load_news(count_url,num_page):
     parser = ParserLinks(num_page)
     parser.get_data()
     parser.process_data()
-    news_parser=ParserNews(parser.links[0])
+    news_parser=ParserNews(parser.links[count_url])
     news_parser.get_data()
     news_parser.process_data()
-    pp.pprint(news_parser.news)
